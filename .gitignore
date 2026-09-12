@@ -28,3 +28,8 @@ __pycache__/
 .coverage
 htmlcov/
 *.egg-info/
+admin-web/node_modules/
+admin-web/.next/
+admin-web/coverage/
+admin-web/.env
+admin-web/.env.local

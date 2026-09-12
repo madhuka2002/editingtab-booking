@@ -1,0 +1,55 @@
+:root { color-scheme: light; --navy:#172033; --blue:#2864dc; --bg:#f3f5f8; --border:#dbe1ea; --text:#172033; --muted:#637083; --danger:#b42318; --success:#18794e; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font-family:Arial, Helvetica, sans-serif; line-height:1.45; }
+a { color:inherit; }
+button,input,textarea,select { font:inherit; }
+button,.button-link { border:0; border-radius:6px; background:var(--blue); color:#fff; cursor:pointer; display:inline-block; padding:.65rem 1rem; text-decoration:none; }
+button:disabled { cursor:not-allowed; opacity:.55; }
+.secondary { background:#e7ebf1; color:var(--text); }
+.danger { background:var(--danger); }
+.admin-grid { display:grid; grid-template-columns:230px minmax(0,1fr); min-height:100vh; }
+.sidebar { background:var(--navy); color:#fff; padding:1.25rem 1rem; }
+.brand { font-size:1.15rem; font-weight:700; margin:0 0 1.5rem; }
+.sidebar nav { display:grid; gap:.35rem; }
+.sidebar a { border-radius:6px; color:#dfe6f4; padding:.65rem .75rem; text-decoration:none; }
+.sidebar a:hover { background:#26334d; color:#fff; }
+.admin-main { min-width:0; }
+.topbar { align-items:center; background:#fff; border-bottom:1px solid var(--border); display:flex; gap:1rem; justify-content:space-between; min-height:64px; padding:.75rem 1.5rem; }
+.topbar-actions { align-items:center; display:flex; flex-wrap:wrap; gap:.75rem; }
+.context-field { align-items:center; display:flex; gap:.5rem; }
+.context-field input { width:280px; }
+.content { margin:0 auto; max-width:1200px; padding:1.5rem; }
+.page-heading { align-items:flex-start; display:flex; justify-content:space-between; gap:1rem; margin-bottom:1rem; }
+h1,h2,h3 { line-height:1.2; }
+h1 { font-size:1.65rem; margin:.15rem 0; }
+h2 { font-size:1.2rem; margin-top:0; }
+.muted { color:var(--muted); }
+.card { background:#fff; border:1px solid var(--border); border-radius:9px; padding:1.25rem; }
+.grid { display:grid; gap:1rem; }
+.grid.two { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.grid.three { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.stack { display:grid; gap:1rem; }
+.form-grid { display:grid; gap:1rem; grid-template-columns:repeat(2,minmax(0,1fr)); }
+.field { display:grid; gap:.35rem; }
+.field.full { grid-column:1/-1; }
+label { font-size:.9rem; font-weight:600; }
+input,textarea,select { background:#fff; border:1px solid #b8c1ce; border-radius:6px; color:var(--text); padding:.6rem .7rem; width:100%; }
+input:focus,textarea:focus,select:focus { border-color:var(--blue); outline:2px solid #c9d9fa; }
+.field-error,.error-banner { color:var(--danger); }
+.error-banner,.notice { background:#fff4f2; border:1px solid #f4c7c3; border-radius:6px; padding:.75rem; }
+.notice { background:#fffbea; border-color:#eadc9c; color:#654f00; }
+.success { color:var(--success); }
+.status { border-radius:999px; display:inline-block; font-size:.78rem; font-weight:700; padding:.15rem .55rem; }
+.status.active { background:#dff7eb; color:#176b45; }
+.status.inactive { background:#eceff3; color:#596475; }
+.table-wrap { overflow-x:auto; }
+table { border-collapse:collapse; width:100%; }
+th,td { border-bottom:1px solid var(--border); padding:.7rem; text-align:left; }
+th { color:var(--muted); font-size:.8rem; text-transform:uppercase; }
+.center-card { align-items:center; display:flex; justify-content:center; min-height:100vh; padding:1rem; }
+.center-card .card { max-width:430px; width:100%; }
+.login-title { margin-bottom:1.25rem; text-align:center; }
+.empty { color:var(--muted); padding:1.5rem 0; text-align:center; }
+.metric { font-size:1.8rem; font-weight:700; margin:.25rem 0; }
+@media (max-width:800px) { .admin-grid { grid-template-columns:1fr; }.sidebar { padding:.8rem }.brand { margin-bottom:.6rem }.sidebar nav { display:flex; overflow-x:auto }.sidebar a { white-space:nowrap }.topbar { align-items:flex-start; flex-direction:column }.context-field { align-items:stretch; flex-direction:column; width:100% }.context-field input { width:100% }.grid.two,.grid.three,.form-grid { grid-template-columns:1fr }.content { padding:1rem } }
+
