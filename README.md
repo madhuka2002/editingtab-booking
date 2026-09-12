@@ -56,3 +56,17 @@ Cross-service communication must use explicit APIs, events, or contracts.
 ## Current Milestone
 
 BOOK-001 — Property, Room Type and Physical Room foundation.
+
+## Local backend setup
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install -e ".[test]"
+Copy-Item .env.example .env
+uvicorn app.main:app --app-dir backend --reload
+```
+
+The service uses PostgreSQL through SQLAlchemy's async `asyncpg` driver. Run migrations explicitly with `alembic upgrade head`; application startup never applies migrations.
+
+BOOK-001's temporary tenant adapter reads `X-Organization-ID`. This header is trusted context, not authentication: a production edge proxy must remove any client-supplied value and inject the verified Platform Core organization identifier. Request bodies contain no tenant ownership field. Replace the dependency in `app/context.py` when Platform Core integration is available.
