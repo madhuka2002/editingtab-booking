@@ -1,103 +1,239 @@
 # EditingTab Booking
 
-Standalone Booking and Inventory service for the EditingTab Tourism Operations Platform.
+Booking and inventory module for the Editing Tab modular tourism operations platform.
 
 ## Purpose
 
-This service owns booking-related business functionality including:
+The Booking module owns accommodation inventory and booking-domain data while remaining independently deployable from Core and other optional modules.
+
+Current foundation includes:
 
 - Properties
 - Room types
 - Physical rooms
-- Availability
-- Pricing
-- Temporary booking holds
-- Reservations
-- Manual / phone / walk-in bookings
-- Booking status lifecycle
+- Organization-scoped inventory
+- Browser-based Admin Web foundation
+- Core authentication proxy integration
+- Organization context for current development environment
 
-## Architecture
+## Current implementation status
 
-EditingTab Booking is independently deployable and maintains its own database.
+Completed milestones:
 
-It must not directly read or write the EditingTab Platform Core database.
+- `BOOK-001` — property and room foundation
+- `ADMIN-001` — browser Admin Web foundation
 
-Platform Core owns:
+Current Admin Web routes include:
 
-- Users
-- Authentication
-- Organizations
-- Memberships
-- RBAC
-- Module entitlements
+- `/login`
+- `/dashboard`
+- `/organizations`
+- `/properties`
+- `/properties/[propertyId]`
+- `/room-types`
+- `/rooms`
+- `/users`
+- `/roles`
 
-Booking owns:
+The browser UAT baseline has verified:
 
-- Property data
-- Room types
-- Physical rooms
-- Availability
-- Pricing
-- Holds
-- Reservations
+- browser login/logout/relogin
+- Core organization creation
+- organization context
+- property creation/list/detail
+- room type creation/list
+- physical room creation
+- data persistence across authentication sessions
 
-Cross-service communication must use explicit APIs, events, or contracts.
+## Important current limitation
 
-## Stack
+The current development integration uses a manually selected organization context and a development-only `X-Organization-ID` header.
+
+This is **not production authorization**.
+
+A trusted Core-to-Booking identity contract must replace this development mechanism before production deployment.
+
+## Current scope
+
+Implemented foundation:
+
+- property CRUD foundation for create/read
+- room-type create/read foundation
+- physical-room create/read foundation
+- organization-scoped queries
+- Admin Web navigation and forms
+- server-side Core auth proxy/session handling
+
+Not yet implemented in this baseline:
+
+- property edit/status/delete
+- room-type edit/status/delete
+- room edit/status/delete
+- pricing
+- availability engine
+- temporary holds
+- reservation lifecycle
+- public customer booking flow
+- payment gateway
+- OTA/channel manager integrations
+- advanced booking analytics
+- production service-to-service identity
+
+## Technology
+
+Backend:
 
 - Python
 - FastAPI
-- PostgreSQL
 - SQLAlchemy
+- PostgreSQL
 - Alembic
-- Pytest
-- Docker
 
-## Current Milestone
+Frontend:
 
-BOOK-001 — Property, Room Type and Physical Room foundation.
+- Next.js
+- React
+- TypeScript
 
-## Local backend setup
+## Setup
 
-```powershell
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-python -m pip install -e ".[test]"
-Copy-Item .env.example .env
-uvicorn app.main:app --app-dir backend --reload
+### Prerequisites
+
+Install:
+
+- Git
+- Python 3.11+
+- Node.js and npm
+- PostgreSQL
+
+### Clone
+
+```bash
+git clone https://github.com/madhuka2002/editingtab-booking.git
+cd editingtab-booking
 ```
 
-The service uses PostgreSQL through SQLAlchemy's async `asyncpg` driver. Run migrations explicitly with `alembic upgrade head`; application startup never applies migrations.
+### Backend environment
 
-BOOK-001's temporary tenant adapter reads `X-Organization-ID`. This header is trusted context, not authentication: a production edge proxy must remove any client-supplied value and inject the verified Platform Core organization identifier. Request bodies contain no tenant ownership field. Replace the dependency in `app/context.py` when Platform Core integration is available.
+```bash
+python -m venv .venv
+source .venv/Scripts/activate
+```
 
-## ADMIN-001 browser admin
+Install backend dependencies:
 
-The independent Next.js admin lives in `admin-web/` and runs on port `3000`.
+```bash
+pip install -r requirements.txt
+```
 
-1. Start Platform Core on port `8000` from its separate repository:
+If the repository's current dependency file is located elsewhere, follow the repository tree and current tooling.
 
-   ```powershell
-   cd backend
-   .venv\Scripts\Activate.ps1
-   uvicorn app.main:app --port 8000
-   ```
+### Database
 
-2. Start Booking on port `8001` from this repository after configuring `BOOKING_DATABASE_URL` and explicitly applying the migration when appropriate:
+Create:
 
-   ```powershell
-   uvicorn app.main:app --app-dir backend --port 8001
-   ```
+`editingtab_booking`
 
-3. Start the admin:
+Configure the backend `.env` using the fields expected by the current configuration.
 
-   ```powershell
-   cd admin-web
-   Copy-Item .env.example .env.local
-   npm install
-   npm run dev
-   ```
+Do not commit `.env` or credentials.
 
-The admin variables are `NEXT_PUBLIC_CORE_API_URL` (default `http://127.0.0.1:8000`) and `NEXT_PUBLIC_BOOKING_API_URL` (default `http://127.0.0.1:8001`). Do not place secrets in either public variable.
+### Run migrations
 
-Current backend limitations include missing Core organization list/detail, entitlement-read, user-management, role-management, and authenticated-organization APIs, plus missing Booking update/deactivate/delete APIs. The full contract-level analysis is in [`docs/ADMIN_UI_GAP_ANALYSIS.md`](docs/ADMIN_UI_GAP_ANALYSIS.md).
+Use the repository's current Alembic configuration from the backend working directory.
+
+```bash
+python -m alembic upgrade head
+```
+
+### Start backend
+
+Use the repository's current FastAPI application entry point and configured development port. The known local development setup has used:
+
+`http://127.0.0.1:8001`
+
+### Admin Web
+
+```bash
+cd admin-web
+npm install
+npm run dev
+```
+
+Known local development URL:
+
+`http://localhost:3000`
+
+The frontend proxies authenticated Core/Booking requests server-side where implemented.
+
+## Test
+
+Backend:
+
+```bash
+python -m pytest -q
+```
+
+Admin Web:
+
+```bash
+npm run lint
+npm run build
+```
+
+TypeScript:
+
+```bash
+npx tsc --noEmit
+```
+
+Run the commands supported by the current checkout; test counts may change.
+
+## Browser QA
+
+Use a real browser for product acceptance.
+
+Recommended local services:
+
+```text
+Core API       http://127.0.0.1:8000
+Booking API    http://127.0.0.1:8001
+Admin Web      http://localhost:3000
+```
+
+Recommended flow:
+
+1. Open Admin Web.
+2. Login with a valid test account.
+3. Verify organization context.
+4. Create/select an organization as permitted.
+5. Create a property.
+6. Open property detail.
+7. Create a room type.
+8. Create a physical room.
+9. Refresh/re-login.
+10. Confirm persisted data.
+11. Verify unauthorized/cross-tenant scenarios where test data is available.
+
+## Security warning
+
+Never treat `X-Organization-ID` as a trusted production identity mechanism.
+
+Never commit:
+
+- `.env`
+- database passwords
+- JWT secrets
+- API keys
+- customer data
+
+## QA documentation
+
+See:
+
+- `docs/SETUP.md`
+- `docs/QA_TESTING_HANDOVER.md`
+- `docs/RELEASE_CHECKLIST.md`
+- `docs/ARCHITECTURE_STATUS.md`
+- `docs/API_OVERVIEW.md`
+- `docs/CURRENT_STATUS.md`
